@@ -1,6 +1,7 @@
 import numpy as np
 import struct
 from open3d import *
+import os
 # import pptk
 
 def convert_data(file_path):
@@ -18,17 +19,28 @@ def convert_data(file_path):
     pcd.points = open3d.utility.Vector3dVector(np_pcd)
     return pcd
 
-def save_pcd(pcd):
-    open3d.io.write_point_cloud("pointcloud_1.pcd", pcd)
+def save_pcd(directory):
+    i = 0
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        if filename.endswith(".bin"):
+
+            res = convert_data(directory + "/" + filename)
+            open3d.io.write_point_cloud("point_cloud_data/" + str(i) + ".pcd", res)
+            # print(i)
+            i = i + 1
+
 
 # def visualize():
 
+
 if __name__ == '__main__':
-    file_path = "kitti_dataset/data_object_velodyne/training/velodyne/000000.bin"
-    res = convert_data(file_path)
+    directory = "kitti_dataset/data_object_velodyne/training/velodyne"
+    # save_pcd(directory)
     # Read the point cloud and display the files
-    cloud = open3d.io.read_point_cloud("pointcloud_1.pcd")
-    open3d.visualization.draw_geometries([cloud])
+    cloud = []
+    for i in range(0,20):
+        cloud.append(open3d.io.read_point_cloud("point_cloud_data/" + str(i) + ".pcd"))
+    open3d.visualization.draw_geometries([cloud[0]])
+    # open3d.visualization.draw_geometries_with_animation_callback(geometry_list = [cloud_0, cloud_1, cloud_2, cloud_3, cloud_4, cloud_5, cloud_6])
 
-
-    # open3d.io.write_point_cloud("pointcloud_1.pcd", res)
